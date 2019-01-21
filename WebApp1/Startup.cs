@@ -15,6 +15,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebApp1.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Net.Mail;
+using System.Net;
 
 namespace WebApp1
 {
@@ -76,6 +78,30 @@ namespace WebApp1
 
             services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
+
+            SmtpClient smtpClient = new SmtpClient();
+            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;//指定电子邮件发送方式
+            smtpClient.Host = "smtp.office365.com";//指定SMTP服务器
+            smtpClient.Port = 587;
+            smtpClient.Credentials = new NetworkCredential("w1520138768@outlook.com", "WangQuan1");//用户名和密码
+            smtpClient.EnableSsl = true;
+            /*
+            MailAddress fromAddress = new MailAddress("1520138768@qq.com", "wangquan");
+            //MailAddress toAddress = new MailAddress(toMail);
+            MailMessage mailMessage = new MailMessage();
+            mailMessage.Subject = subj;//主题
+            mailMessage.Body = bodys;//内容
+            mailMessage.BodyEncoding = Encoding.Default;//正文编码
+            mailMessage.IsBodyHtml = true;//设置为HTML格式
+            mailMessage.Priority = MailPriority.Normal;//优先级
+            await smtpClient.SendMailAsync(mailMessage);
+            */
+
+            services.AddFluentEmail("w1520138768@outlook.com")
+                .AddRazorRenderer()
+                .AddSmtpSender(smtpClient);
+
+            //SmtpClient stmp = new SmtpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
